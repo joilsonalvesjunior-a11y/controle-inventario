@@ -1,2 +1,3 @@
-#Controle de Inventário
-Projeto desenvolvido na aula de DevOps.
+# Controle de Inventário
+Projeto para gerenciar itens.
+Status: em desenvolvimento
