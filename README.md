@@ -1,3 +1,2 @@
-# Sistema de Controle de Inventário
-Projeto para gerenciar itens.
-Status: em testes
+# Controle de Inventário
+Status: em desenvolvimento
