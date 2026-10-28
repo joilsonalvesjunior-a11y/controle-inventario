@@ -1,2 +1,2 @@
 def gerar_relatorio(itens):
-    return f"Total de itens cadastrados: {len(itens)}"
+    return f"Relatório Gerado: {len(itens)}"
