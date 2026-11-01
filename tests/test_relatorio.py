@@ -8,4 +8,4 @@ def test_gerar_relatorio_com_dois_itens():
 
     resultado = gerar_relatorio(itens)
 
-    assert resultado == "Relatório Gerado: 3"
+    assert resultado == "Relatório Gerado: 2"
