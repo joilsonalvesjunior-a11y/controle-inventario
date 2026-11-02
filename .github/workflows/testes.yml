@@ -41,5 +41,12 @@ jobs:
         run: |
           mkdir -p homologacao
           unzip -o controle-inventario.zip -d homologacao
+          echo "Conteudo da pasta homologacao:"
+          ls -R homologacao
           PYTHONPATH=homologacao/pacote python -c 'from relatorio import gerar_relatorio; print(gerar_relatorio([1, 2]))'
 
+      - name: Armazenar homologacao
+        uses: actions/upload-artifact@v4
+        with:
+          name: homologacao
+          path: homologacao/
