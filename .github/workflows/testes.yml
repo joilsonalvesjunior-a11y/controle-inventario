@@ -9,25 +9,37 @@ on:
 jobs:
   testes:
     runs-on: ubuntu-latest
+
     steps:
       - name: Baixar codigo
         uses: actions/checkout@v4
+
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Instalar pytest
         run: python -m pip install pytest
+
       - name: Executar testes
         run: python -m pytest -v
+
       - name: Preparar pacote
         run: |
           mkdir -p pacote
           cp relatorio.py pacote/
           zip -r controle-inventario.zip pacote/
+
       - name: Armazenar artefato
         uses: actions/upload-artifact@v4
         with:
           name: controle-inventario
           path: controle-inventario.zip
+
+      - name: Simular homologacao
+        run: |
+          mkdir -p homologacao
+          unzip -o controle-inventario.zip -d homologacao
+          PYTHONPATH=homologacao/pacote python -c 'from relatorio import gerar_relatorio; print(gerar_relatorio([1, 2]))'
 
