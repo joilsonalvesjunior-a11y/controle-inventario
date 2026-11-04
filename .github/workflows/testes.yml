@@ -1,4 +1,4 @@
-name: Testes automatizados
+name: Pipeline CI CD
 
 on:
   push:
@@ -7,6 +7,8 @@ on:
     branches: [main]
 
 jobs:
+
+  # JOB 1 - INTEGRACAO CONTINUA (CI)
   testes:
     runs-on: ubuntu-latest
 
@@ -25,7 +27,7 @@ jobs:
       - name: Executar testes
         run: python -m pytest -v
 
-      - name: Preparar pacote
+      - name: Criar pacote ZIP
         run: |
           mkdir -p pacote
           cp relatorio.py pacote/
@@ -37,16 +39,50 @@ jobs:
           name: controle-inventario
           path: controle-inventario.zip
 
+  # JOB 2 - HOMOLOGACAO
+  homologacao:
+    needs: testes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar artefato
+        uses: actions/download-artifact@v4
+        with:
+          name: controle-inventario
+
       - name: Simular homologacao
         run: |
           mkdir -p homologacao
           unzip -o controle-inventario.zip -d homologacao
-          echo "Conteudo da pasta homologacao:"
-          ls -R homologacao
-          PYTHONPATH=homologacao/pacote python -c 'from relatorio import gerar_relatorio; print(gerar_relatorio([1, 2]))'
+
+      - name: Validar homologacao
+        run: |
+          PYTHONPATH=homologacao/pacote python -c 'from relatorio import gerar_relatorio; assert gerar_relatorio([1, 2]) == "Relatório Gerado: 2"; print("Homologacao aprovada")'
 
       - name: Armazenar homologacao
         uses: actions/upload-artifact@v4
         with:
           name: homologacao
           path: homologacao/
+
+  # JOB 3 - PRODUCAO
+  producao:
+    needs: homologacao
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Baixar artefato
+        uses: actions/download-artifact@v4
+        with:
+          name: controle-inventario
+
+      - name: Simular producao
+        run: |
+          mkdir -p producao
+          unzip -o controle-inventario.zip -d producao
+
+      - name: Executar aplicacao em producao
+        run: |
+          PYTHONPATH=producao/pacote python -c 'from relatorio import gerar_relatorio; print(gerar_relatorio([1, 2]))'
